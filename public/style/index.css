@@ -1,0 +1,57 @@
+.index {
+  font-size: 1rem;
+  line-height: 1.3125rem;
+}
+
+.index__intro {
+  margin: 8rem 5rem 0 5rem;
+}
+
+@media (max-width: 40em) {
+  .index__intro {
+    margin: 1rem 1.25rem 0 1.25rem;
+  }
+}
+
+.index__intro h1 {
+  font-weight: 500;
+}
+
+.index__intro a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+.index__intro a::after {
+  color: oklch(71.47% 0.2366 42.68);
+  content: " ⦁";
+}
+
+.index__intro s {
+  text-decoration-thickness: 1px;
+}
+
+.index__intro sup {
+  text-transform: uppercase;
+  font-size: 0.5rem;
+  top: -0.7em;
+}
+
+.index__intro p {
+  margin-top: 1em;
+}
+
+.index__intro p:first-child, .index__intro h1 + p {
+  margin-top: 0;
+}
+
+@media (max-width: 40em) {
+  .index__bio {
+    margin-top: 3rem;
+  }
+}
+
+.index__posts {
+  margin: 8rem 0.5rem 0 0.5rem;
+}

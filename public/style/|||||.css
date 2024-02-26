@@ -1,0 +1,23 @@
+@import "reset.css";
+@import "fonts.css";
+@import "grid.css";
+@import "prose.css";
+@import "index.css";
+@import "markdowncontent.css";
+
+html {
+  font-family: "sans", -apple-system, system-ui, BlinkMacSystemFont, sans-serif;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.5rem;
+  padding: 0 1.5rem;
+}
+
+
+body {
+  padding-bottom: 8rem;
+}

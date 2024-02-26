@@ -1,0 +1,39 @@
+<div class="index">
+  <grid columns-sm="1" class="index__intro">
+    <grid-cell span="4" span-sm="row">
+      <h1>João Pesce</h1>
+      <p>
+        Curiosity-driven, detail-oriented creator of digital products. Every day fighting chaos.
+      </p>
+    </grid-cell>
+
+    <grid-cell span="8" span-sm="row" columns="2" columns-sm="1" class="index__bio">
+      <p>
+        As Robert A. Heinlein once put it, <q>Specialization is for insects</q>. In my 10+ years of
+        experience in the digital space, I’ve worn many hats — product owner, developer, designer,
+        team manager and researcher. I believe a holistic vision is key to <s>delivering works that
+        matter</s> making great shit. The <a href="https://youtu.be/UF8uR6Z6KLc?t=55"
+        target="_blank">dots are more connected</a> than we often realize.
+      </p>
+      <p>
+        I’m currently head of technology at Oficina Reserva (acq. by Arezzo&Co), which I co-founded
+        in 2015. Before venturing into my own business, I used to do research in the cross section
+        of Computer Science and the humanities along with other folks at <a
+        href="https://dcc.ufmg.br/" target="_blank">UFMG <sup>Brazil</sup></a>, <a
+        href="https://www.cl.cam.ac.uk/research/srg/" target="_blank">University of Cambridge
+        <sup>UK</sup></a>, <a href="https://www.khoury.northeastern.edu/"
+        target="_blank">Northeastern University <sup>USA</sup></a> and <a
+        href="https://www.iiitd.ac.in/" target="_blank">IIIT Delhi <sup>India</sup></a>
+      </p>
+    </grid-cell>
+  </grid>
+  <grid columns="4" columns-sm="1" gap="8" class="index__posts">
+    {{range $post := .Posts}}
+    {{if ne .Thumbnail ""}}
+      <grid-cell {{if eq $post.Wide "true"}}span="2" span-sm="row"{{end}}>
+        <img src="{{$post.Thumbnail}}"/>
+      </grid-cell>
+    {{end}}
+    {{end}}
+  </grid>
+</div>

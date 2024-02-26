@@ -1,0 +1,12 @@
+.prose h1,
+.prose h2 {
+  margin-bottom: 2rem;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose code, .prose pre {
+  font-size: 0.875rem;
+}
