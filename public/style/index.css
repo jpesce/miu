@@ -42,7 +42,7 @@
   margin-top: 1em;
 }
 
-.index__bio > p, .index__intro h1 + p {
+.index__bio > p:first-child, .index__intro h1 + p {
   margin-top: 0;
 }
 
@@ -54,6 +54,10 @@
 
 .index__posts {
   margin: 8rem 0.5rem 0 0.5rem;
+}
+
+.index__posts > * {
+  padding-bottom: 0.5rem;
 }
 
 .index__posts figcaption {
