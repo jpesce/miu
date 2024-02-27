@@ -30,8 +30,15 @@
   <grid columns="4" columns-sm="1" gap="8" class="index__posts">
     {{range $post := .Posts}}
     {{if ne .Thumbnail ""}}
-      <grid-cell {{if eq $post.Wide "true"}}span="2" span-sm="row"{{end}}>
-        <img src="{{$post.Thumbnail}}"/>
+      <grid-cell {{if eq .ThumbnailWide "true"}}span="2" span-sm="row"{{end}}>
+        <figure>
+        <img src="{{.Thumbnail}}"/>
+          {{if ne .Caption ""}}
+            <figcaption>
+              {{.Caption}}
+            </figcaption>
+          {{end}}
+        </figure>
       </grid-cell>
     {{end}}
     {{end}}

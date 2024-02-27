@@ -23,8 +23,9 @@ type indexTemplatePostData struct {
   Title string
   Url string
   Thumbnail string
-  Wide string
+  ThumbnailWide string
   PublishedDate string
+  Caption string
 }
 
 // Public functions
@@ -65,6 +66,7 @@ func frontmatterToPostsDataStruct(nodes []SiteNode) ([]indexTemplatePostData, er
       return nil, fmt.Errorf("BuildIndex: %w", error)
     }
 
+    // Ignore certain content
     if metadata["showInMainPage"] == "false" { continue }
 
     postsData[i].Title = metadata["title"]
@@ -72,15 +74,22 @@ func frontmatterToPostsDataStruct(nodes []SiteNode) ([]indexTemplatePostData, er
       postsData[i].Title = file.FileNameWithoutExtension(node.sourcePath)
     }
 
+
     // URL is file path minus first dir (public/) and the filename (index.html)
     destinationPathParts := strings.Split(node.destinationPath, "/")
     destinationUrl := filepath.Join(destinationPathParts[1:len(destinationPathParts)-1]...)
     postsData[i].Url = destinationUrl
 
-    postsData[i].Wide = metadata["wide"]
+    postsData[i].ThumbnailWide = metadata["thumbnail-wide"]
 
     if metadata["thumbnail"] != "" {
       postsData[i].Thumbnail = filepath.Join(destinationUrl, metadata["thumbnail"])
+    }
+
+
+    if metadata["description"] != "" {
+      year := strings.Split(metadata["date"], "-")[0]
+      postsData[i].Caption = fmt.Sprintf("%s (%s) /  %s", postsData[i].Title, year, metadata["description"])
     }
   }
 

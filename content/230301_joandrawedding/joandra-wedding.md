@@ -1,5 +1,7 @@
 ---
-title: Wedding web app
+title: Wedding
+date: 2023-03-01
+description: One-page web app with cart, payment integration and RSVP form
 thumbnail: joandra-wedding.jpg
-wide: true
+thumbnail-wide: true
 ---
