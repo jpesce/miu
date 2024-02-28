@@ -6,6 +6,7 @@ Build content written in markdown
 
 import (
 	"fmt"
+  "os/exec"
 	"miu/modules/file"
 	"miu/modules/markdown"
 	"miu/modules/template"
@@ -55,9 +56,30 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
         }
 
         nodes = append(nodes, newNode)
+      } else if fileExtension == ".jpg" || fileExtension == ".png" {
+        // Images
+        destinationPathParts := strings.Split(filePath, "/")
+        destinationPathParts[0] = targetDirectory
+        destinationPath := filepath.Join(destinationPathParts...)
+
+        error := os.MkdirAll(filepath.Dir(destinationPath), 0755)
+        if error != nil {
+          return nil,fmt.Errorf("CopyFileToDestination: %w", error)
+        }
+
+        error = exec.Command(
+          "convert",
+          filePath,
+          "-thumbnail", "1440x>",
+          "-quality", "75",
+          "-colorspace", "sRGB",
+          destinationPath,
+        ).Run()
+        if error != nil {
+          return nil, fmt.Errorf("Markdowncontent: %w", error)
+        }
       } else {
-        // Other files (images and other assets), should be simply copied directly and are not
-        // considered a site node
+        // Other files should be simply copied directly
         destinationPathParts := strings.Split(filePath, "/")
         destinationPathParts[0] = targetDirectory
         destinationPath := filepath.Join(destinationPathParts...)
