@@ -24,7 +24,9 @@ func MarkdownToHtml(sourceFullPath string) (string, error) {
     return "", fmt.Errorf("MarkdownToHtml: %w", error)
   }
 
-  return string(output[:]), nil
+  stringOutput := string(output)
+  stringOutput = strings.TrimSuffix(stringOutput, "\n")
+  return stringOutput, nil
 }
 
 // Get frontmatter from a file and return a map of strings for each field. Assumes a very simple

@@ -16,8 +16,8 @@ import (
 type HTML = template.HTML
 
 // Render template to a given file
-func RenderTemplateToFile(templateFullPath string, content any, destinationPath string) (error) {
-  parsedTemplate, error := template.ParseFiles(templateFullPath)
+func RenderTemplateToFile(templateFullPath []string, data any, destinationPath string) (error) {
+  parsedTemplate, error := template.ParseFiles(templateFullPath...)
   if error != nil {
     return fmt.Errorf("RenderTemplateToFile: %w", error)
   }
@@ -34,7 +34,7 @@ func RenderTemplateToFile(templateFullPath string, content any, destinationPath 
   defer file.Close()
 
   buffer := bufio.NewWriter(file)
-  error = parsedTemplate.Execute(buffer, content)
+  error = parsedTemplate.Execute(buffer, data)
   if error != nil {
     return fmt.Errorf("RenderTemplateToFile: %w", error)
   }
@@ -43,15 +43,15 @@ func RenderTemplateToFile(templateFullPath string, content any, destinationPath 
   return nil
 }
 
-// Render template to a string and return it
-func RenderTemplateToString(templateFullPath string, content any) (string, error) {
-  parsedTemplate, error := template.ParseFiles(templateFullPath)
+// Render template to a string
+func RenderTemplateToString(templateFullPath []string, data any) (string, error) {
+  parsedTemplate, error := template.ParseFiles(templateFullPath...)
   if error != nil {
     return "", fmt.Errorf("RenderTemplateToFile: %w", error)
   }
 
   buffer := new(bytes.Buffer)
-  error = parsedTemplate.Execute(buffer, content)
+  error = parsedTemplate.Execute(buffer, data)
   if error != nil {
     return "", fmt.Errorf("RenderTemplateToFile: %w", error)
   }

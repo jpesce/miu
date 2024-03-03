@@ -12,6 +12,15 @@ import (
   "fmt"
 )
 
+/* Replace root directory of path with a new ReplaceRootDirectory
+ * E.g. "path/to/file.go" "newPath" -> "newPath/to/file.go"
+*/
+func ReplaceRootDirectory(path string, newRootDirectory string) string {
+  destinationPathParts := strings.Split(path, string(os.PathSeparator))
+  destinationPathParts[0] = newRootDirectory
+  return filepath.Join(destinationPathParts...)
+}
+
 // Given a complete path, return the filename without the file's extension.
 // E.g. "path/to/file.go" -> "file"
 // "file.go" -> "file"
@@ -88,7 +97,7 @@ func CopyDirectoryRecursively(sourceDirectory string, destinationDirectory strin
   return nil
 }
 
-// Copy directory and everything inside it to destination
+// Copy directory and everything inside it to destination using `cp`
 // E.g., if the source directory is "./source" and the destination directory is "./destination", it
 // copies everything to "./destination"
 func CmdCopyDirectoryRecursively(sourceDirectory string, destinationDirectory string) (error) {

@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+
+type markdowncontentTemplateData struct {
+  Content template.HTML
+}
+
 type SiteNode struct {
   sourcePath string
   destinationPath string
@@ -50,7 +55,7 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
 
       if fileExtension == ".md" {
         // Markdown files should be built transforming it to HTML and using the appropriate template
-        newNode, error := BuildMarkdownContentFile(filePath, templateDirectory, targetDirectory)
+        newNode, error := BuildMarkdownContentFile(filePath, sourceDirectory, templateDirectory, targetDirectory)
         if error != nil {
           return nodes, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
         }
@@ -58,9 +63,7 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
         nodes = append(nodes, newNode)
       } else if fileExtension == ".jpg" || fileExtension == ".png" {
         // Images
-        destinationPathParts := strings.Split(filePath, "/")
-        destinationPathParts[0] = targetDirectory
-        destinationPath := filepath.Join(destinationPathParts...)
+        destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
 
         error := os.MkdirAll(filepath.Dir(destinationPath), 0755)
         if error != nil {
@@ -93,42 +96,33 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
 }
 
 // Compile markdown content file to full HTML page in the destination
-func BuildMarkdownContentFile(filePath string, templateDirectory string, targetDirectory string) (SiteNode, error) {
-  destinationPathParts := strings.Split(filePath, "/")
-  destinationPathParts[0] = targetDirectory
-  destinationPath := filepath.Join(destinationPathParts...)
+func BuildMarkdownContentFile(filePath string, contentDirectory string, templateDirectory string, targetDirectory string) (SiteNode, error) {
+  destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
 
-  depth := len(destinationPathParts) - 1
-  if depth == 1 {
+  if strings.Split(filePath, "/")[0] == contentDirectory {
     // When markdown is in the root of content directory, create a directory with its name.
-    // E.g., "content/example.md" -> "public/example/index.html"
+    // e.g., "content/example.md" -> "public/example/index.html"
     destinationPath = filepath.Join(file.PathWithoutExtension(destinationPath), "index.html")
   } else {
     // When markdown is not in the root, use its directory name.
-    // E.g. "content/example/anything.md" -> "public/example/index.html"
-    destinationPath = filepath.Join(append(destinationPathParts[:depth], "index.html")...)
+    // e.g. "content/example/anything.md" -> "public/example/index.html"
+    destinationPath = filepath.Join(filepath.Dir(destinationPath), "index.html")
   }
 
   html, error := markdown.MarkdownToHtml(filePath)
-  markdowncontentTemplateData := struct{
-    Content template.HTML
-  }{
+  if error != nil {
+    return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
+  }
+  markdowncontentTemplateData := markdowncontentTemplateData {
     Content: template.HTML(html),
   }
-  markdowncontentTemplatePath := filepath.Join(templateDirectory, "markdowncontent.tmpl.html")
-  markdowncontentContent, error := template.RenderTemplateToString(markdowncontentTemplatePath, markdowncontentTemplateData)
-  if error != nil {
-    return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
-  }
 
-  if error != nil {
-    return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
+  // Only create a page if it has any content
+  if html != "" {
+    mainTemplatePath := filepath.Join(templateDirectory, "main.tmpl.html")
+    markdowncontentTemplatePath := filepath.Join(templateDirectory, "markdowncontent.tmpl.html")
+    template.RenderTemplateToFile([]string{mainTemplatePath, markdowncontentTemplatePath}, markdowncontentTemplateData, destinationPath)
   }
-  mainTemplateData := mainTemplateData {
-    Content: template.HTML(markdowncontentContent),
-  }
-  mainTemplatePath := filepath.Join(templateDirectory, "main.tmpl.html")
-  template.RenderTemplateToFile(mainTemplatePath, mainTemplateData, destinationPath)
 
   return SiteNode{
     sourcePath: filePath,

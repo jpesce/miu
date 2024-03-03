@@ -1,3 +1,4 @@
+{{- define "content" -}}
 <div class="index">
   <grid columns-sm="1" class="index__intro">
     <grid-cell span="4" span-sm="row">
@@ -6,7 +7,6 @@
         Curiosity-driven, detail-oriented creator of digital products. Every day fighting chaos.
       </p>
     </grid-cell>
-
     <grid-cell span="8" span-sm="row" columns="2" columns-sm="1" class="index__bio">
       <p>
         As Robert A. Heinlein once put it, <q>Specialization is for insects</q>. In my 10+ years of
@@ -28,19 +28,20 @@
     </grid-cell>
   </grid>
   <grid columns="4" columns-sm="1" gap="8" class="index__posts">
-    {{range $post := .Posts}}
-    {{if ne .Thumbnail ""}}
+    {{- range $post := .Posts -}}
+    {{- if ne .Thumbnail "" -}}
       <grid-cell {{if eq .ThumbnailWide "true"}}span="2" span-sm="row"{{end}}>
         <figure>
         <img src="{{.Thumbnail}}"/>
-          {{if ne .Caption ""}}
+          {{- if ne .Caption "" -}}
             <figcaption>
               {{.Caption}}
             </figcaption>
-          {{end}}
+          {{- end -}}
         </figure>
       </grid-cell>
-    {{end}}
-    {{end}}
+    {{- end -}}
+    {{- end -}}
   </grid>
 </div>
+{{- end -}}

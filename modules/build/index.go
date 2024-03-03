@@ -41,17 +41,9 @@ func BuildIndex(nodes []SiteNode, templateDir string, targetDir string) (error) 
     Posts: postsData,
   }
   indexTemplatePath := filepath.Join(templateDir, "index.tmpl.html")
-  indexContent, error := template.RenderTemplateToString(indexTemplatePath, indexTemplateData)
-  if error != nil {
-    return fmt.Errorf("BuildIndex: %w", error)
-  }
-
-  mainTemplateData := mainTemplateData {
-    Content: template.HTML(indexContent),
-  }
   mainTemplatePath := filepath.Join(templateDir, "main.tmpl.html")
   targetFile := filepath.Join(targetDir, "index.html")
-  template.RenderTemplateToFile(mainTemplatePath, mainTemplateData, targetFile)
+  template.RenderTemplateToFile([]string{mainTemplatePath, indexTemplatePath}, indexTemplateData, targetFile)
 
   return nil
 }
