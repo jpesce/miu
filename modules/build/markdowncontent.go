@@ -6,6 +6,7 @@ Build content written in markdown
 
 import (
 	"fmt"
+  "strconv"
   "os/exec"
 	"miu/modules/file"
 	"miu/modules/markdown"
@@ -60,6 +61,46 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
           return nodes, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
         }
 
+        metadata, error := markdown.GetFrontmatterFromFile(filePath)
+        if error != nil {
+          return nil, fmt.Errorf("BuildIndex: %w", error)
+        }
+
+        if(metadata["thumbnail"] != "") {
+          width := 720
+          if(metadata["thumbnail-wide"] == "true") { width = 1440; }
+
+          imageSourcePath := filepath.Join(filepath.Dir(filePath), metadata["thumbnail"])
+          imageDestinationPath := file.ReplaceRootDirectory(imageSourcePath, targetDirectory)
+          imageDestinationPath  = file.PathWithoutExtension(imageDestinationPath)+"@thumbnail"+filepath.Ext(imageDestinationPath)
+
+          error := os.MkdirAll(filepath.Dir(imageDestinationPath), 0755)
+          if error != nil {
+            return nil,fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+          }
+
+          error = exec.Command(
+            "convert",
+            imageSourcePath,
+            "-thumbnail", strconv.Itoa(width)+"x>",
+            imageDestinationPath,
+          ).Run()
+          if error != nil {
+            return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+          }
+          error = exec.Command(
+            "cwebp",
+            "-preset", "photo",
+            "-metadata", "all",
+            "-q", "85",
+            imageDestinationPath,
+            "-o", imageDestinationPath,
+          ).Run()
+          if error != nil {
+            return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+          }
+        }
+
         nodes = append(nodes, newNode)
       } else if fileExtension == ".jpg" || fileExtension == ".png" {
         // Images
@@ -67,26 +108,16 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
 
         error := os.MkdirAll(filepath.Dir(destinationPath), 0755)
         if error != nil {
-          return nil,fmt.Errorf("CopyFileToDestination: %w", error)
+          return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
         }
 
-        error = exec.Command(
-          "convert",
-          filePath,
-          "-thumbnail", "1440x>",
-          "-quality", "75",
-          "-colorspace", "sRGB",
-          destinationPath,
-        ).Run()
+        error = file.CopyFileToDestination(filePath, destinationPath)
         if error != nil {
-          return nil, fmt.Errorf("Markdowncontent: %w", error)
+          return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
         }
       } else {
         // Other files should be simply copied directly
-        destinationPathParts := strings.Split(filePath, "/")
-        destinationPathParts[0] = targetDirectory
-        destinationPath := filepath.Join(destinationPathParts...)
-
+        destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
         file.CopyFileToDestination(filePath, destinationPath)
       }
     }

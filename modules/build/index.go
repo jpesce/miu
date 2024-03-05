@@ -75,7 +75,8 @@ func frontmatterToPostsDataStruct(nodes []SiteNode) ([]indexTemplatePostData, er
     postsData[i].ThumbnailWide = metadata["thumbnail-wide"]
 
     if metadata["thumbnail"] != "" {
-      postsData[i].Thumbnail = filepath.Join(destinationUrl, metadata["thumbnail"])
+      thumbnailFilename := file.PathWithoutExtension(metadata["thumbnail"])+"@thumbnail"+filepath.Ext(metadata["thumbnail"])
+      postsData[i].Thumbnail = filepath.Join(destinationUrl, thumbnailFilename)
     }
 
 
