@@ -1,7 +1,7 @@
 package template
 
 /*
-Wrapper around "html/template" to inject content in templates
+Wrapper around "html/template" to render templates
 */
 
 import (

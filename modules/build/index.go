@@ -8,6 +8,7 @@ import (
   "miu/modules/file"
   "miu/modules/markdown"
   "miu/modules/template"
+  "miu/modules/image"
   "fmt"
   "strings"
   "path/filepath"
@@ -75,8 +76,8 @@ func frontmatterToPostsDataStruct(nodes []SiteNode) ([]indexTemplatePostData, er
     postsData[i].ThumbnailWide = metadata["thumbnail-wide"]
 
     if metadata["thumbnail"] != "" {
-      thumbnailFilename := file.PathWithoutExtension(metadata["thumbnail"])+"@thumbnail"+filepath.Ext(metadata["thumbnail"])
-      postsData[i].Thumbnail = filepath.Join(destinationUrl, thumbnailFilename)
+      thumbnailPath := filepath.Join(destinationUrl, metadata["thumbnail"])
+      postsData[i].Thumbnail = image.GetImageNameWithTag(thumbnailPath, "thumbnail")
     }
 
 

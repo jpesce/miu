@@ -35,7 +35,7 @@ func PathWithoutExtension(path string) string {
   return strings.TrimSuffix(path, filepath.Ext(path))
 }
 
-// Copy file to destination and create any necessary parent directories along the way
+// Copy file to destination and create any necessary directories along the way
 func CopyFileToDestination(sourceFile string, destinationFile string) (error) {
   destinationDirectory := filepath.Dir(destinationFile)
 

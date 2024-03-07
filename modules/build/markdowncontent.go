@@ -5,12 +5,11 @@ Build content written in markdown
 */
 
 import (
+  "miu/modules/file"
+  "miu/modules/markdown"
+  "miu/modules/template"
+  "miu/modules/image"
 	"fmt"
-  "strconv"
-  "os/exec"
-	"miu/modules/file"
-	"miu/modules/markdown"
-	"miu/modules/template"
 	"os"
 	"path/filepath"
 	"strings"
@@ -55,7 +54,6 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
       fileExtension := filepath.Ext(fileName)
 
       if fileExtension == ".md" {
-        // Markdown files should be built transforming it to HTML and using the appropriate template
         newNode, error := BuildMarkdownContentFile(filePath, sourceDirectory, templateDirectory, targetDirectory)
         if error != nil {
           return nodes, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
@@ -63,39 +61,11 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
 
         metadata, error := markdown.GetFrontmatterFromFile(filePath)
         if error != nil {
-          return nil, fmt.Errorf("BuildIndex: %w", error)
+          return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
         }
 
         if(metadata["thumbnail"] != "") {
-          width := 720
-          if(metadata["thumbnail-wide"] == "true") { width = 1440; }
-
-          imageSourcePath := filepath.Join(filepath.Dir(filePath), metadata["thumbnail"])
-          imageDestinationPath := file.ReplaceRootDirectory(imageSourcePath, targetDirectory)
-          imageDestinationPath  = file.PathWithoutExtension(imageDestinationPath)+"@thumbnail"+filepath.Ext(imageDestinationPath)
-
-          error := os.MkdirAll(filepath.Dir(imageDestinationPath), 0755)
-          if error != nil {
-            return nil,fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-          }
-
-          error = exec.Command(
-            "convert",
-            imageSourcePath,
-            "-thumbnail", strconv.Itoa(width)+"x>",
-            imageDestinationPath,
-          ).Run()
-          if error != nil {
-            return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-          }
-          error = exec.Command(
-            "cwebp",
-            "-preset", "photo",
-            "-metadata", "all",
-            "-q", "85",
-            imageDestinationPath,
-            "-o", imageDestinationPath,
-          ).Run()
+          error := buildThumbnail(filePath, targetDirectory)
           if error != nil {
             return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
           }
@@ -105,11 +75,6 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
       } else if fileExtension == ".jpg" || fileExtension == ".png" {
         // Images
         destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
-
-        error := os.MkdirAll(filepath.Dir(destinationPath), 0755)
-        if error != nil {
-          return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-        }
 
         error = file.CopyFileToDestination(filePath, destinationPath)
         if error != nil {
@@ -159,4 +124,25 @@ func BuildMarkdownContentFile(filePath string, contentDirectory string, template
     sourcePath: filePath,
     destinationPath: destinationPath,
   }, nil
+}
+
+/* Create optimized thumbnail file in the target directory */
+func buildThumbnail(filePath string, targetDirectory string) error {
+  metadata, error := markdown.GetFrontmatterFromFile(filePath)
+  if error != nil {
+    return fmt.Errorf("buildThumbnail: %w", error)
+  }
+
+  width := 720
+  if(metadata["thumbnail-wide"] == "true") { width = 1440; }
+
+  imageSourcePath := filepath.Join(filepath.Dir(filePath), metadata["thumbnail"])
+  imageDestinationPath := file.ReplaceRootDirectory(image.GetImageNameWithTag(imageSourcePath, "thumbnail"), targetDirectory)
+
+  error = image.CompressImage(imageSourcePath, imageDestinationPath, width)
+  if error != nil {
+    return fmt.Errorf("buildThumbnail: %w", error)
+  }
+
+  return nil
 }
