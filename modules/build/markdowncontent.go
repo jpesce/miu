@@ -11,6 +11,7 @@ import (
   "miu/modules/image"
 	"fmt"
 	"os"
+  "regexp"
 	"path/filepath"
 	"strings"
 )
@@ -117,6 +118,10 @@ func BuildMarkdownContentFile(filePath string, contentDirectory string, template
   if error != nil {
     return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
   }
+
+  pageUrl := getPageUrl(destinationPath)
+  html = addPrefixToSrc(html, pageUrl)
+
   markdowncontentTemplateData := markdowncontentTemplateData {
     Title: title,
     Content: template.HTML(html),
@@ -154,4 +159,16 @@ func buildThumbnail(filePath string, targetDirectory string) error {
   }
 
   return nil
+}
+
+/* Get final URL for file */
+func getPageUrl(destinationPath string)(string) {
+  pageUrl := filepath.Dir(destinationPath)
+  return strings.Join(strings.Split(pageUrl, "/")[1:], "/")
+}
+
+/* Add URL prefix to src attributes */
+func addPrefixToSrc(html string, pageUrl string)(string) {
+  srcRegexp := regexp.MustCompile(`src="([^"]*)"`)
+  return srcRegexp.ReplaceAllString(html, "src=\"/"+pageUrl+"/${1}\"")
 }
