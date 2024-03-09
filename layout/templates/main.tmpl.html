@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>|||||</title>
+    <title>{{block "title" .}}|||||{{end}}</title>
     <meta property="description" content="Curiosity-driven, detail-oriented creator of digital products. Every day fighting chaos." />
     <meta property="og:title" content="|||||" />
     <meta property="og:type" content="website" />
@@ -28,5 +28,9 @@
       </a>
     </header>
       {{block "content" .}}No content implemented{{end}}
+    <footer class="wrapper">
+      &#127279; 2024<br>
+      <a href="/meta">Meta</a>
+    </footer>
   </body>
 </html>

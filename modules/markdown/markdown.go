@@ -18,6 +18,8 @@ import (
 func MarkdownToHtml(sourceFullPath string) (string, error) {
   output, error := exec.Command(
     "pandoc",
+    "--lua-filter",
+    "./pandoc-filters/table-labels.lua",
     sourceFullPath,
   ).Output()
   if error != nil {

@@ -18,7 +18,7 @@ grid[columns="3"] { --grid-number-of-columns: 3 }
 grid[columns="4"] { --grid-number-of-columns: 4 }
 grid[columns="5"] { --grid-number-of-columns: 5 }
 
-@media (max-width: 40rem) {
+@media (width <= 40rem) {
   grid[columns-sm="1"] { --grid-number-of-columns: 1 }
 }
 
@@ -37,7 +37,7 @@ grid > grid-cell[span="3"] { --grid-column-span: 3 }
 grid > grid-cell[span="4"] { --grid-column-span: 4 }
 grid > grid-cell[span="8"] { --grid-column-span: 8 }
 
-@media (max-width: 40rem) {
+@media (width <= 40rem) {
   grid > grid-cell[span-sm="row"] { grid-column: 1/-1 }
 }
 
@@ -49,6 +49,6 @@ grid > grid-cell[columns] {
 
 grid > grid-cell[columns="2"] { --grid-columns: 2 }
 
-@media (max-width: 40em) {
+@media (width <= 40em) {
   grid > grid-cell[columns-sm="1"] { --grid-columns: 1 }
 }

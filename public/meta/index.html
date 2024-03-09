@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Meta</title>
+    <meta property="description" content="Curiosity-driven, detail-oriented creator of digital products. Every day fighting chaos." />
+    <meta property="og:title" content="|||||" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://pesce.cc/images/ogimage.jpg" />
+    <meta property="og:description" content="Curiosity-driven, detail-oriented creator of digital products. Every day fighting chaos." />
+    <link rel="icon" href="/images/favicon.png">
+    <link rel="stylesheet" href="/style/|||||.css">
+  </head>
+  <body>
+    <header>
+      <a href="/">
+        <svg width="22" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#clip0_33_3)">
+            <path d="M0 0V18H1.56176V1.64958C1.56176 0.739612 0.859686 0 0 0ZM4.19814 0C3.76829 0 3.41964 0.369806 3.41964 0.822715V17.1731C3.41964 17.6302 3.76829 17.9958 4.19814 17.9958C4.62798 17.9958 4.97663 17.626 4.97663 17.1731V0.822715C4.97663 0.365651 4.62798 0 4.19814 0ZM10.2541 1.64958V16.3504C10.2541 17.2604 10.9514 18 11.8159 18V0C10.9562 0 10.2541 0.739612 10.2541 1.64958ZM14.4523 0C14.0224 0 13.6738 0.369806 13.6738 0.822715V17.1731C13.6738 17.6302 14.0224 17.9958 14.4523 17.9958C14.8821 17.9958 15.2308 17.626 15.2308 17.1731V0.822715C15.2308 0.365651 14.8821 0 14.4523 0ZM6.83451 1.64958V18C7.69419 18 8.39627 17.2604 8.39627 16.3504V0C7.53658 0 6.83451 0.739612 6.83451 1.64958Z" fill="black"/>
+          </g>
+          <defs>
+            <clipPath id="clip0_33_3">
+              <rect width="15.2308" height="18" fill="white"/>
+            </clipPath>
+          </defs>
+        </svg>
+      </a>
+    </header>
+      <div class="prose markdowncontent">
+  <h1 id="meta">Meta</h1>
+<figure>
+<img src="van-de-graff-generator-patent.jpg"
+alt="Van De Graff electrostatic generator patent US581499A from 1931" />
+<figcaption aria-hidden="true">Van De Graff electrostatic generator
+patent US581499A from 1931</figcaption>
+</figure>
+<p>This website is generated using <a
+href="https://github.com/jpesce/miu">miu</a>, a very simple static site
+generator written from the ground up. This page serves as a high-level
+documentation of how the generator works and the thoughts that went in
+when creating it. It was written in hopes that it might be useful for
+someone attempting to or already building one such program. It was also
+written for myself as a <a
+href="https://www.goodreads.com/quotes/320581-writing-is-thinking-to-write-well-is-to-think-clearly">way
+of reflecting about it</a> and to serve as an assistant for future
+iterations.</p>
+<h2 id="why-build-a-site-generator">Why build a site generator?</h2>
+<ol type="1">
+<li>Learn a (new) programming language. In my case I wanted to see what
+<a href="https://go.dev/">Go</a> looked like, so it seemed like a fun
+thing to do.</li>
+<li>Explore the core elements of developing a website. Some would argue
+that today’s popular ways of building websites are just <a
+href="https://frankchimero.com/blog/2018/everything-easy/">too damn
+complex</a> and I have a hunch that some developers have no idea what’s
+going on behind the curtains a lot of the times. By creating your own
+tools, you are able to gain an clearer understanding of the process and
+possibly cultivate both an appreciation and criticism for other
+toolchains.</li>
+<li>Don’t go full bare-bones. Maintaining a moderately complex website
+in pure HTML/CSS may prove to be a suicidal task.</li>
+</ol>
+<h2 id="naming">Naming</h2>
+<p>miu is both a Japanese given name (美宇) and a <a
+href="https://dictionary.cambridge.org/pronunciation/english/mu">pronunciation</a>
+for the greek letter μ. The letter μ is used as a unit prefix denoting a
+factor of 10<sup>−6</sup> (one millionth) or, in other words, it’s very
+tiny. It’s also the coefficient of friction, which is the principle by
+which some (electro)static generator machines work, so it fits the theme
+of static (site) generators nicely. I guess a loose translation could be
+“a very tiny thing that generates static stuff”.</p>
+<h2 id="modules">Modules</h2>
+<p>Here’s a high-level overview of the different modules that comprise
+the generator:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Module</th>
+<th>What it does</th>
+<th>Simpler alternative</th>
+<th>Implementation in miu</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td label="Module">Template engine</td>
+<td label="What it does">Combine templates and sometimes also data to
+produce pages</td>
+<td label="Simpler alternative">Copy and paste code and data</td>
+<td label="Implementation in miu"><a
+href="https://pkg.go.dev/html/template">Go’s standard library</a></td>
+</tr>
+<tr class="even">
+<td label="Module">Markdown renderer</td>
+<td label="What it does">Transform markdown (which is more succinct) to
+HTML</td>
+<td label="Simpler alternative">Write everything directly in HTML</td>
+<td label="Implementation in miu"><a
+href="https://pandoc.org/">Pandoc</a></td>
+</tr>
+<tr class="odd">
+<td label="Module">Image processor</td>
+<td label="What it does">Optimize image sizes, process images in a
+desired way</td>
+<td label="Simpler alternative">Optimize images manually</td>
+<td label="Implementation in miu"><a
+href="https://imagemagick.org/index.php">ImageMagick</a> and <a
+href="https://developers.google.com/speed/webp/docs/cwebp">cwebp</a></td>
+</tr>
+<tr class="even">
+<td label="Module">Build pipeline</td>
+<td label="What it does">Execute the modules in the right order, to the
+right files and output to the right places</td>
+<td label="Simpler alternative">Execute modules and move files around
+manually</td>
+<td label="Implementation in miu">Custom functions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="high-level-understanding">High-level understanding</h2>
+<p>In miu, content is stored as plain-text markdown files aiming for
+easy migration and enhanced longevity. Templates provide both a way to
+reuse sections such as the header and a way to generate special pages
+such as the index. The build pipeline orchestrate things acting like the
+controller in the <a
+href="https://wiki.c2.com/?WhatsaControllerAnyway">modern understading
+of the MVC architecture</a>.</p>
+<figure>
+<img src="diagram-horizontal.svg" title="High-level overview of miu"
+class="desktop-only" alt="A high-level overview of miu" />
+<figcaption aria-hidden="true">A high-level overview of miu</figcaption>
+</figure>
+<figure>
+<img src="diagram-vertical.svg" title="High-level overview of miu"
+class="mobile-only" alt="A high-level overview of miu" />
+<figcaption aria-hidden="true">A high-level overview of miu</figcaption>
+</figure>
+<p>Step by step:</p>
+<ol type="1">
+<li>Assets such as stylesheets, favicons and global images are copied
+directly</li>
+<li>Markdown content is compiled to HTML and placed in their
+templates</li>
+<li>Markdown images are optimized</li>
+<li>Index is generated based on the content that was previously
+built</li>
+</ol>
+<h2 id="faq">FAQ</h2>
+<dl>
+<dt>If it’s so simple, why not go even more bare-bones and do it as bash
+scripts?</dt>
+<dd>
+I’ve done that in a project innocently named <a
+href="https://github.com/jpesce/shite/">shite</a> (shell + site) and it
+was fun! I enjoyed a lot but felt I wasn’t fluent enough in the
+language. Making simple things that would be trivial in other
+programming languages felt like a struggle. But I’d love to tackle that
+again some day.
+</dd>
+</dl>
+</div>
+    <footer class="wrapper">
+      &#127279; 2024<br>
+      <a href="/meta">Meta</a>
+    </footer>
+  </body>
+</html>

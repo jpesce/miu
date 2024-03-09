@@ -17,6 +17,7 @@ import (
 
 
 type markdowncontentTemplateData struct {
+  Title string
   Content template.HTML
 }
 
@@ -105,11 +106,19 @@ func BuildMarkdownContentFile(filePath string, contentDirectory string, template
     destinationPath = filepath.Join(filepath.Dir(destinationPath), "index.html")
   }
 
+  metadata, error := markdown.GetFrontmatterFromFile(filePath)
+  if error != nil {
+    return SiteNode{}, fmt.Errorf("buildThumbnail: %w", error)
+  }
+  title := "|||||"
+  if(metadata["title"] != "") { title = metadata["title"] }
+
   html, error := markdown.MarkdownToHtml(filePath)
   if error != nil {
     return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
   }
   markdowncontentTemplateData := markdowncontentTemplateData {
+    Title: title,
     Content: template.HTML(html),
   }
 

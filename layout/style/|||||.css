@@ -19,7 +19,24 @@ header {
   padding: 0 1.5rem;
 }
 
+footer {
+  font-size: 0.875rem;
+  padding: 6rem 1rem 1rem 1rem;
+}
 
-body {
-  padding-bottom: 8rem;
+footer a {
+  font-weight: 500;
+}
+
+/* Utility class to show on only on mobile or desktop */
+@media screen and (width > 40em) {
+  .mobile-only, figure:has(img.mobile-only) {
+    display: none;
+  }
+}
+
+@media screen and (width <= 40em) {
+  .desktop-only, figure:has(img.desktop-only) {
+    display: none;
+  }
 }

@@ -20,6 +20,15 @@ func CompressImage(imageSourcePath string, imageDestinationPath string, maxWidth
     return fmt.Errorf("CompressImage: %w", error)
   }
 
+  // error = exec.Command(
+  //   "cp",
+  //   imageSourcePath,
+  //   imageDestinationPath,
+  // ).Run()
+  // if error != nil {
+  //   return fmt.Errorf("CompressImage: %w", error)
+  // }
+
   error = exec.Command(
     "convert",
     imageSourcePath,

@@ -1,12 +1,129 @@
 .prose h1,
 .prose h2 {
-  margin-bottom: 2rem;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-weight: 500;
 }
 
 .prose p {
-  margin-bottom: 1rem;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
 }
 
 .prose code, .prose pre {
+  font-size: 0.875em;
+}
+
+.prose figure figcaption {
   font-size: 0.875rem;
+  color: gray;
+}
+
+/* List */
+.prose ul, .prose ol, .prose dl {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.prose ul {
+  list-style-type: disc;
+}
+
+.prose ol {
+  list-style-type: decimal;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+  margin-top: 0.5em;
+  padding-left: 0.25em;
+  margin-left: -0.25em;
+}
+
+.prose li::marker {
+  font-family: Times, serif;
+  font-style: italic;
+  font-size: 0.875em;
+}
+
+.prose dl dt {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+@media screen and (width <= 40em) {
+  .prose li {
+    position: relative;
+    padding: 0 0 0 0.25em;
+    margin: 1em 0 0 1em;
+    margin-top: 1em;
+  }
+}
+
+/* Table */
+.prose table {
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+
+.prose table th, .prose table tr {
+  vertical-align: top;
+}
+
+.prose table tr td, .prose table tr th {
+  padding: 0.75rem;
+}
+
+.prose table thead tr {
+  border-bottom: 1px solid black;
+}
+
+.prose table tbody tr {
+  border-bottom: 1px solid lightgray;
+}
+
+.prose table th {
+  font-weight: 500;
+}
+
+@media screen and (width <= 40em) {
+  .prose table thead {
+    display: none;
+  }
+
+  .prose table tr td {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .prose table tr td {
+    display: flex;
+  }
+
+  .prose table td * {
+    margin-right: 0.25em;
+    margin-left: 0.25em;
+  }
+
+  .prose table td *:first-child {
+    margin-left: 0;
+  }
+
+  .prose table td *:last-child {
+    margin-right: 0;
+  }
+
+  .prose table td::before {
+    content: attr(label);
+    font-weight: 500;
+    width: calc(35% - (0.35 * 2rem));
+    min-width: calc(35% - (0.35 * 2rem));
+    margin-right: 0.5rem;
+  }
 }
