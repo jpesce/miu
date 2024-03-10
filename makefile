@@ -9,6 +9,9 @@ setup:
 clean:
 	rm -rf $(TARGET_DIR)/*
 
+format:
+	gofmt -s -w .
+
 watch: all
 	fswatch --latency 0.1 --one-per-batch -0 . --exclude=$(TARGET_DIR) | xargs -0 -n1 -I{} make
 

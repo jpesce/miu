@@ -1,9 +1,9 @@
 package build
 
 import (
-  "miu/modules/template"
+	"miu/modules/template"
 )
 
 type mainTemplateData struct {
-  Content template.HTML
+	Content template.HTML
 }
