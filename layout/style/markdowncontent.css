@@ -3,3 +3,10 @@
   margin: auto;
   padding: 0 1rem;
 }
+
+.markdowncontent.prose img {
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+  max-width: min(calc(100vw - 2rem), 50rem);
+}

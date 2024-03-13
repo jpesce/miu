@@ -22,7 +22,7 @@ and to serve as an assistant for future iterations.
    complex](https://frankchimero.com/blog/2018/everything-easy/) and I have a hunch that some
    developers have no idea what's going on behind the curtains a lot of the times. By creating your
    own tools, you are able to gain an clearer understanding of the process and possibly cultivate
-   both an appreciation and criticism for other toolchains.
+   both an appreciation and criticism for other tool chains.
 3. Don't go full bare-bones. Maintaining a moderately complex website in pure HTML/CSS may prove to
    be a suicidal task.
 
@@ -51,7 +51,7 @@ Here's a high-level overview of the different modules that comprise the generato
 In miu, content is stored as plain-text markdown files aiming for easy migration and enhanced
 longevity. Templates provide both a way to reuse sections such as the header and a way to generate
 special pages such as the index. The build pipeline orchestrate things acting like the controller in
-the [modern understading of the MVC architecture](https://wiki.c2.com/?WhatsaControllerAnyway).
+the [modern understanding of the MVC architecture](https://wiki.c2.com/?WhatsaControllerAnyway).
 
 ![A high-level overview of miu](diagram-horizontal.svg "High-level overview of miu"){.desktop-only}
 
@@ -59,7 +59,7 @@ the [modern understading of the MVC architecture](https://wiki.c2.com/?WhatsaCon
 
 Step by step:
 
-1. Assets such as stylesheets, favicons and global images are copied directly
+1. Assets such as style sheets, favicons and global images are copied directly
 2. Markdown content is compiled to HTML and placed in their templates
 3. Markdown images are optimized
 4. Index is generated based on the content that was previously built
@@ -71,3 +71,8 @@ If it's so simple, why not go even more bare-bones and do it as bash scripts?
 site) and it was fun! I enjoyed a lot but felt I wasn't fluent enough in the language. Making simple
 things that would be trivial in other programming languages felt like a struggle. But I'd love to
 tackle that again some day.
+
+What if I don't want to create my own generator?
+: There are great projects out there such as [Jekyll (Ruby)](https://jekyllrb.com/), [Hugo
+(Go)](https://gohugo.io/), [11ty (Javascript)](https://www.11ty.dev/), [Pelican
+(Python)](https://getpelican.com/).

@@ -16,6 +16,11 @@
   text-decoration-thickness: 1px;
 }
 
+.prose a:hover {
+  text-decoration: none;
+  opacity: 0.6;
+}
+
 .prose code, .prose pre {
   font-size: 0.875em;
 }

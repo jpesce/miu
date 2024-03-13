@@ -28,6 +28,11 @@ footer a {
   font-weight: 500;
 }
 
+footer .copyleft {
+  display: inline-block;
+  transform: rotateY(180deg);
+}
+
 /* Utility class to show on only on mobile or desktop */
 @media screen and (width > 40em) {
   .mobile-only, figure:has(img.mobile-only) {
