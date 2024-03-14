@@ -1,7 +1,7 @@
 ---
-title: Meta
+title: Colophon
 ---
-# Meta
+# Colophon
 
 ![Van De Graff electrostatic generator patent US581499A from 1931](van-de-graff-generator-patent.jpg)
 
@@ -76,3 +76,10 @@ What if I don't want to create my own generator?
 : There are great projects out there such as [Jekyll (Ruby)](https://jekyllrb.com/), [Hugo
 (Go)](https://gohugo.io/), [11ty (Javascript)](https://www.11ty.dev/), [Pelican
 (Python)](https://getpelican.com/).
+
+How do people usually do this?
+: Every site is different – and that's the beauty of it. Here are some interesting approaches other
+people have taken: [qubyte](https://qubyte.codes/colophon) has a great philosophy of keeping things
+simple; [Devine Lu Linvega](https://wiki.xxiivv.com/site/about.html)'s site is highly aligned with
+the way they build software; [IndieWeb's colophon](https://indieweb.org/colophon) page is also a
+great resource for everything colophon.

@@ -58,8 +58,12 @@
 }
 
 .prose dl dt {
-  margin-top: 1em;
+  margin-top: 1.5em;
   margin-bottom: 0.5em;
+}
+
+.prose dl dt:first-child {
+  margin-top: 1em;
 }
 
 @media screen and (width <= 40em) {

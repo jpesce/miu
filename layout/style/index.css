@@ -17,16 +17,28 @@
   font-weight: 500;
 }
 
-.index__intro a:hover {
+.index__intro a {
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: 1px;
+}
+.index__intro a:hover {
+  color: #666;
+  text-decoration: none;
 }
 
 .index__intro a::after {
   color: oklch(71.47% 0.2366 42.68);
   content: " ⦁";
+  display: inline-block;
+  text-decoration: none;
+  margin-left: 0.125rem;
 }
+
+.index__intro a:hover::after {
+  opacity: 1;
+}
+
 
 .index__intro s {
   text-decoration-thickness: 1px;
