@@ -1,0 +1,6 @@
+{
+  "redirects": [
+    { "source": "/meta", "destination": "/colophon", "permanent": true }
+  ]
+}
+
