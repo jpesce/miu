@@ -1,7 +1,7 @@
 ---
 title: STRKTR
 date: 2023-01-21
-description: Displaced cirlces probability-based composition generator
+description: Program to generate probability-based compositions of displaced cirlces
 thumbnail: strktr.png
 thumbnail-wide: true
 ---

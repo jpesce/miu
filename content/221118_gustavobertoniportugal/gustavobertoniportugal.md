@@ -1,6 +1,6 @@
 ---
 title: Gustavo Bertoni Portugal mini tour
 date: 2022-11-18
-description: Posters for artist's concerts
+description: Series of posters for a tour
 thumbnail: gustavobertoniportugal-19.jpg
 ---
