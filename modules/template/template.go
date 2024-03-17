@@ -13,11 +13,14 @@ import (
 	"path/filepath"
 )
 
+const TemplateDir = "layout/templates"
+
 type HTML = template.HTML
 
 // Render template to a given file
-func RenderTemplateToFile(templateFullPath []string, data any, destinationPath string) error {
-	parsedTemplate, error := template.ParseFiles(templateFullPath...)
+func RenderTemplateToFile(templateNames []string, data any, destinationPath string) error {
+	templatePaths := templateNamesToPaths(templateNames)
+	parsedTemplate, error := template.ParseFiles(templatePaths...)
 	if error != nil {
 		return fmt.Errorf("RenderTemplateToFile: %w", error)
 	}
@@ -57,4 +60,13 @@ func RenderTemplateToString(templateFullPath []string, data any) (string, error)
 	}
 
 	return buffer.String(), nil
+}
+
+// Given an array of template names, return their full paths
+func templateNamesToPaths(templateNames []string) []string {
+	templatePaths := []string{}
+	for _, templateName := range templateNames {
+		templatePaths = append(templatePaths, filepath.Join(TemplateDir, templateName+".tmpl.html"))
+	}
+	return templatePaths
 }

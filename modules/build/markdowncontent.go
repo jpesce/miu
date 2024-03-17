@@ -6,6 +6,7 @@ Build content written in markdown
 
 import (
 	"fmt"
+	"miu/modules/cache"
 	"miu/modules/file"
 	"miu/modules/image"
 	"miu/modules/markdown"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 type markdowncontentTemplateData struct {
@@ -26,18 +28,22 @@ type SiteNode struct {
 	destinationPath string
 }
 
-// Given a directory, build the files and output to the target directory. If there's another
-// directory inside it, recursively call itself
-func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory string, targetDirectory string) ([]SiteNode, error) {
-	entries, error := os.ReadDir(sourceDirectory)
-	if error != nil {
-		return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+// Given a directory, build the files and output to the target directory. If there's another directory inside it, recursively call itself
+func BuildMarkdownContent(sourceDir string, targetDir string) ([]SiteNode, error) {
+	waitGroup := sync.WaitGroup{}
+
+	entries, err := os.ReadDir(sourceDir)
+	if err != nil {
+		return nil, fmt.Errorf("BuildMarkdownContent: %w", err)
 	}
 
-	var nodes []SiteNode
+	var (
+		nodesMu sync.Mutex
+		nodes   []SiteNode
+	)
 	for _, entry := range entries {
 		entryName := entry.Name()
-		entryPath := filepath.Join(sourceDirectory, entryName)
+		entryPath := filepath.Join(sourceDir, entryName)
 
 		// Ignore hidden (.*) files
 		if string(entryName[0]) == "." {
@@ -46,59 +52,70 @@ func BuildMarkdownContentDirectory(sourceDirectory string, templateDirectory str
 
 		// If it's a directory, build it recursively
 		if entry.IsDir() {
-			newNodes, error := BuildMarkdownContentDirectory(entryPath, templateDirectory, targetDirectory)
-			nodes = append(nodes, newNodes...)
-			if error != nil {
-				return nodes, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-			}
+			waitGroup.Add(1)
+			newNodes := []SiteNode{}
+			go func() {
+				defer waitGroup.Done()
+				newNodes, _ = BuildMarkdownContent(entryPath, targetDir) // TODO: properly deal with error
+
+				nodesMu.Lock()
+				nodes = append(nodes, newNodes...)
+				nodesMu.Unlock()
+			}()
 		} else {
 			fileName := entryName
 			filePath := entryPath
 			fileExtension := filepath.Ext(fileName)
 
 			if fileExtension == ".md" {
-				newNode, error := BuildMarkdownContentFile(filePath, sourceDirectory, templateDirectory, targetDirectory)
-				if error != nil {
-					return nodes, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-				}
+				waitGroup.Add(1)
+				newNode := SiteNode{}
+				go func() {
+					defer waitGroup.Done()
+					newNode, _ = BuildMarkdownContentFile(filePath, sourceDir, targetDir) // TODO: properly deal with error
+
+					nodesMu.Lock()
+					nodes = append(nodes, newNode)
+					nodesMu.Unlock()
+				}()
 
 				metadata, error := markdown.GetFrontmatterFromFile(filePath)
 				if error != nil {
-					return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+					return nil, fmt.Errorf("BuildMarkdownContent: %w", error)
 				}
 
 				if metadata["thumbnail"] != "" {
-					error := buildThumbnail(filePath, targetDirectory)
-					if error != nil {
-						return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
-					}
+					waitGroup.Add(1)
+					go func() {
+						defer waitGroup.Done()
+						_ = buildThumbnail(filePath, targetDir) // TODO: properly deal with error
+					}()
 				}
-
-				nodes = append(nodes, newNode)
 			} else if fileExtension == ".jpg" || fileExtension == ".png" {
 				// Images
-				destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
+				destinationPath := file.ReplaceRootDir(filePath, targetDir)
 
-				error = file.CopyFileToDestination(filePath, destinationPath)
-				if error != nil {
-					return nil, fmt.Errorf("BuildMarkdownContentDirectory: %w", error)
+				err = file.CopyFile(filePath, destinationPath)
+				if err != nil {
+					return nil, fmt.Errorf("BuildMarkdownContent: %w", err)
 				}
 			} else {
 				// Other files should be simply copied directly
-				destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
-				file.CopyFileToDestination(filePath, destinationPath)
+				destinationPath := file.ReplaceRootDir(filePath, targetDir)
+				file.CopyFile(filePath, destinationPath)
 			}
 		}
 	}
 
+	waitGroup.Wait()
 	return nodes, nil
 }
 
 // Compile markdown content file to full HTML page in the destination
-func BuildMarkdownContentFile(filePath string, contentDirectory string, templateDirectory string, targetDirectory string) (SiteNode, error) {
-	destinationPath := file.ReplaceRootDirectory(filePath, targetDirectory)
+func BuildMarkdownContentFile(filePath string, contentDir string, targetDir string) (SiteNode, error) {
+	destinationPath := file.ReplaceRootDir(filePath, targetDir)
 
-	if strings.Split(filePath, "/")[0] == contentDirectory {
+	if strings.Split(filePath, "/")[0] == contentDir {
 		// When markdown is in the root of content directory, create a directory with its name.
 		// e.g., "content/example.md" -> "public/example/index.html"
 		destinationPath = filepath.Join(file.PathWithoutExtension(destinationPath), "index.html")
@@ -106,6 +123,25 @@ func BuildMarkdownContentFile(filePath string, contentDirectory string, template
 		// When markdown is not in the root, use its directory name.
 		// e.g. "content/example/anything.md" -> "public/example/index.html"
 		destinationPath = filepath.Join(filepath.Dir(destinationPath), "index.html")
+	}
+
+	siteNode := SiteNode{
+		sourcePath:      filePath,
+		destinationPath: destinationPath,
+	}
+
+	shouldUseCache, error := cache.ShouldUseCache([]string{filePath}, destinationPath)
+	if error != nil {
+		return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
+	}
+
+	if shouldUseCache {
+		error = file.CopyFile(cache.GetCachePath(destinationPath), destinationPath)
+		if error != nil {
+			return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
+		}
+
+		return siteNode, nil
 	}
 
 	metadata, error := markdown.GetFrontmatterFromFile(filePath)
@@ -132,19 +168,19 @@ func BuildMarkdownContentFile(filePath string, contentDirectory string, template
 
 	// Only create a page if it has any content
 	if html != "" {
-		mainTemplatePath := filepath.Join(templateDirectory, "main.tmpl.html")
-		markdowncontentTemplatePath := filepath.Join(templateDirectory, "markdowncontent.tmpl.html")
-		template.RenderTemplateToFile([]string{mainTemplatePath, markdowncontentTemplatePath}, markdowncontentTemplateData, destinationPath)
+		template.RenderTemplateToFile([]string{"main", "markdowncontent"}, markdowncontentTemplateData, cache.GetCachePath(destinationPath))
+
+		error = file.CopyFile(cache.GetCachePath(destinationPath), destinationPath)
+		if error != nil {
+			return SiteNode{}, fmt.Errorf("BuildMarkdownContentFile: %w", error)
+		}
 	}
 
-	return SiteNode{
-		sourcePath:      filePath,
-		destinationPath: destinationPath,
-	}, nil
+	return siteNode, nil
 }
 
-/* Create optimized thumbnail file in the target directory */
-func buildThumbnail(filePath string, targetDirectory string) error {
+// Create optimized thumbnail file in the target directory
+func buildThumbnail(filePath string, targetDir string) error {
 	metadata, error := markdown.GetFrontmatterFromFile(filePath)
 	if error != nil {
 		return fmt.Errorf("buildThumbnail: %w", error)
@@ -156,7 +192,7 @@ func buildThumbnail(filePath string, targetDirectory string) error {
 	}
 
 	imageSourcePath := filepath.Join(filepath.Dir(filePath), metadata["thumbnail"])
-	imageDestinationPath := file.ReplaceRootDirectory(image.GetImageNameWithTag(imageSourcePath, "thumbnail"), targetDirectory)
+	imageDestinationPath := file.ReplaceRootDir(image.GetImageNameWithTag(imageSourcePath, "thumbnail"), targetDir)
 
 	error = image.CompressImage(imageSourcePath, imageDestinationPath, width)
 	if error != nil {
@@ -166,13 +202,13 @@ func buildThumbnail(filePath string, targetDirectory string) error {
 	return nil
 }
 
-/* Get final URL for file */
+// Get final URL for file
 func getPageUrl(destinationPath string) string {
 	pageUrl := filepath.Dir(destinationPath)
 	return strings.Join(strings.Split(pageUrl, "/")[1:], "/")
 }
 
-/* Add URL prefix to src attributes */
+// Add URL prefix to src attributes
 func addPrefixToSrc(html string, pageUrl string) string {
 	srcRegexp := regexp.MustCompile(`src="([^"]*)"`)
 	return srcRegexp.ReplaceAllString(html, "src=\"/"+pageUrl+"/${1}\"")

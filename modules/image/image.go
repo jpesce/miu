@@ -6,34 +6,62 @@ Image processor module
 
 import (
 	"fmt"
+	"miu/modules/cache"
 	"miu/modules/file"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 // Compress image to the desired maximum width and create necessary directories along the way
-func CompressImage(imageSourcePath string, imageDestinationPath string, maxWidth int) error {
-	error := os.MkdirAll(filepath.Dir(imageDestinationPath), 0755)
+func CompressImage(source string, destination string, maxWidth int) error {
+	shouldUseCache, error := cache.ShouldUseCache([]string{source}, destination)
 	if error != nil {
 		return fmt.Errorf("CompressImage: %w", error)
 	}
 
-	// error = exec.Command(
-	//   "cp",
-	//   imageSourcePath,
-	//   imageDestinationPath,
-	// ).Run()
-	// if error != nil {
-	//   return fmt.Errorf("CompressImage: %w", error)
-	// }
+	cacheDestination := cache.GetCachePath(destination)
+
+	if shouldUseCache {
+		error = file.CopyFile(cacheDestination, destination)
+		if error != nil {
+			return fmt.Errorf("CompressImage: %w", error)
+		}
+
+		return nil
+	}
+
+	error = os.MkdirAll(filepath.Dir(cacheDestination), 0755)
+	if error != nil {
+		return fmt.Errorf("CompressImage: %w", error)
+	}
+
+	// If the flag `nocompress` is set, copy images directly to destination
+	if strings.Contains(os.Getenv("MIU_FLAGS"), "nocompress") {
+		error = exec.Command(
+			"cp",
+			source,
+			cacheDestination,
+		).Run()
+		if error != nil {
+			return fmt.Errorf("CompressImage: %w", error)
+		}
+
+		error = file.CopyFile(cacheDestination, destination)
+		if error != nil {
+			return fmt.Errorf("CompressImage: %w", error)
+		}
+
+		return nil
+	}
 
 	error = exec.Command(
 		"convert",
-		imageSourcePath,
+		source,
 		"-thumbnail", strconv.Itoa(maxWidth)+"x>",
-		imageDestinationPath,
+		cacheDestination,
 	).Run()
 	if error != nil {
 		return fmt.Errorf("CompressImage: %w", error)
@@ -44,9 +72,14 @@ func CompressImage(imageSourcePath string, imageDestinationPath string, maxWidth
 		"-preset", "photo",
 		"-metadata", "all",
 		"-q", "85",
-		imageDestinationPath,
-		"-o", imageDestinationPath,
+		cacheDestination,
+		"-o", cacheDestination,
 	).Run()
+	if error != nil {
+		return fmt.Errorf("CompressImage: %w", error)
+	}
+
+	error = file.CopyFile(cacheDestination, destination)
 	if error != nil {
 		return fmt.Errorf("CompressImage: %w", error)
 	}

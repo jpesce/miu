@@ -1,5 +1,6 @@
 ---
 title: Colophon
+date: 2024-03-09
 ---
 # Colophon
 
@@ -44,7 +45,8 @@ Here's a high-level overview of the different modules that comprise the generato
 | Template engine | Combine templates and sometimes also data to produce pages | Copy and paste code and data | [Go's standard library](https://pkg.go.dev/html/template) |
 | Markdown renderer | Transform markdown (which is more succinct) to HTML | Write everything directly in HTML | [Pandoc](https://pandoc.org/) |
 | Image processor | Optimize image sizes, process images in a desired way | Optimize images manually | [ImageMagick](https://imagemagick.org/index.php) and [cwebp](https://developers.google.com/speed/webp/docs/cwebp) |
-| Build pipeline | Execute the modules in the right order, to the right files and output to the right places | Execute modules and move files around manually | Custom functions |
+| Cache | Speed up the build process by rebuilding only what's been changed | Wait longer | Custom module |
+| Build pipeline | Execute the modules in the right order, to the right files and output to the right places | Execute modules and move files around manually | Custom module |
 
 ## High-level understanding
 
